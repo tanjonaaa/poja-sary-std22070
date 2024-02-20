@@ -1,20 +1,30 @@
 package school.hei.sary.endpoint.rest.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RestController;
+import java.io.IOException;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import school.hei.sary.service.SaryService;
 
 @RestController
 public class SaryController {
 
-    @PutMapping("/blacks/{id}")
-    public String turnToBlack(@PathVariable String id){
-        return id;
-    }
+  SaryService saryService;
 
-    @GetMapping("/blacks/{id}")
-    public String getBlackedImage(@PathVariable String id){
-        return id + "is blacked";
+  @RequestMapping(
+      path = "/blacks/{id}",
+      method = RequestMethod.PUT,
+      consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+  public String turnToBlack(@PathVariable String id, @RequestPart MultipartFile image) {
+    try {
+      return saryService.transformImage(id, image);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
+
+  @GetMapping("/blacks/{id}")
+  public String getBlackedImage(@PathVariable String id) {
+    return id + "is blacked";
+  }
 }
